@@ -6,17 +6,20 @@
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": { "project": true, "tsconfigRootDir": "./" },
-  "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "tsconfigRootDir": "./"
+  },
+  "plugins": ["@typescript-eslint", "react", "simple-import-sort", "import"],
   "root": true,
   "ignorePatterns": ["dist"],
   "rules": {
     "@typescript-eslint/consistent-type-imports": [
-      2,
+      "error",
       { "fixStyle": "separate-type-imports" }
     ],
     "@typescript-eslint/no-restricted-imports": [
-      2,
+      "error",
       {
         "paths": [
           {
@@ -27,13 +30,13 @@
         ]
       }
     ],
-    "no-console": "warn", // Включить правило no-console как предупреждение
-    "curly": ["error", "all"], // Включить правило curly для обязательного использования {} в if
-    "import/prefer-default-export": "off", // Отключить правило import/prefer-default-export
-    "react/jsx-no-useless-fragment": "error", // Включить правило для бесполезных фрагментов
-    "no-unused-expressions": "error", // Включить правило no-unused-expressions
-    "simple-import-sort/imports": "error", // Включить правило для сортировки импортов
-    "simple-import-sort/exports": "error", // Включить правило для сортировки экспортов
+    "no-console": "warn",
+    "curly": ["error", "all"],
+    "import/prefer-default-export": "off",
+    "react/jsx-no-useless-fragment": "error",
+    "no-unused-expressions": "error",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
     "import/order": [
       "error",
       {
@@ -48,7 +51,17 @@
     ]
   },
   "overrides": [
-    { "files": ["*.{c,m,}{t,j}s", "*.{t,j}sx"] },
-    { "files": ["*{test,spec}.{t,j}s?(x)"], "env": { "jest": true } }
-  ]
+    {
+      "files": ["*.{c,m,}{t,j}s", "*.{t,j}sx"]
+    },
+    {
+      "files": ["*{test,spec}.{t,j}s?(x)"],
+      "env": { "jest": true }
+    }
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }
