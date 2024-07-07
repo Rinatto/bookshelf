@@ -1,12 +1,14 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import About from "./pages/About"
 import "./styles/App.css"
 
 const App = () => {
   return (
-    <div className="App">
-        <h1>
-          Стартовая страница
-        </h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<About />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
