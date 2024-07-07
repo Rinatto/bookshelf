@@ -26,6 +26,25 @@
           }
         ]
       }
+    ],
+    "no-console": "warn", // Включить правило no-console как предупреждение
+    "curly": ["error", "all"], // Включить правило curly для обязательного использования {} в if
+    "import/prefer-default-export": "off", // Отключить правило import/prefer-default-export
+    "react/jsx-no-useless-fragment": "error", // Включить правило для бесполезных фрагментов
+    "no-unused-expressions": "error", // Включить правило no-unused-expressions
+    "simple-import-sort/imports": "error", // Включить правило для сортировки импортов
+    "simple-import-sort/exports": "error", // Включить правило для сортировки экспортов
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          ["builtin", "external"],
+          "internal",
+          ["parent", "sibling", "index"]
+        ],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
+      }
     ]
   },
   "overrides": [
