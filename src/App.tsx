@@ -1,17 +1,15 @@
+import { BrowserRouter} from "react-router-dom"
+
+import { AppRouter } from "./components/AppRouter"
+import { Navbar } from "./components/UI/Navbar/Navbar"
+
 import "./styles/App.css"
 
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-
-import About from "./pages/About"
-
-const App = () => {
+ export const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<About />} />
-      </Routes>
+      <Navbar/>
+      <AppRouter/>
     </BrowserRouter>
   )
 }
-
-export default App

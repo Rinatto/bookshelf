@@ -10,7 +10,12 @@
     "project": "./tsconfig.json",
     "tsconfigRootDir": "./"
   },
-  "plugins": ["@typescript-eslint", "react", "simple-import-sort", "import"],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "simple-import-sort",
+    "import"
+  ],
   "root": true,
   "ignorePatterns": ["dist"],
   "rules": {
@@ -30,29 +35,39 @@
         ]
       }
     ],
-    "no-console": "warn",
+    "no-console": "warn",//
     "curly": ["error", "all"],
-    "import/prefer-default-export": "off",
-    "react/jsx-no-useless-fragment": "error",
-    "no-unused-expressions": "error",
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
-    "import/order": [
+    "import/prefer-default-export": "off",//
+    "import/no-default-export": "error", 
+    "react/jsx-no-useless-fragment": "error",//
+    "no-unused-expressions": "error",//
+    "simple-import-sort/imports": [
       "error",
       {
         "groups": [
-          ["builtin", "external"],
-          "internal",
-          ["parent", "sibling", "index"]
-        ],
-        "newlines-between": "always",
-        "alphabetize": { "order": "asc", "caseInsensitive": true }
+          // Built-in modules come first.
+          ["^node:"],
+          // Packages. `react` related packages come first.
+          ["^react", "^@?\\w"],
+          // Internal packages.
+          ["^(@|components|utils|config|vendored-lib)(/.*|$)"],
+          // Parent imports. Put `..` last.
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+          // Other relative imports. Put same-folder imports and `.` last.
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+          // Style imports.
+          ["^.+\\.s?css$"]
+        ]
       }
-    ]
+    ],
+    "simple-import-sort/exports": "error"
   },
   "overrides": [
     {
-      "files": ["*.{c,m,}{t,j}s", "*.{t,j}sx"]
+      "files": ["*.{c,m,}{t,j}s", "*.{t,j}sx"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
     },
     {
       "files": ["*{test,spec}.{t,j}s?(x)"],
