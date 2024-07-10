@@ -1,26 +1,26 @@
 .navbar {
-    height: 50px;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    padding: 0 15px;
-    background: lightblue;
+  height: 50px;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  background: lightblue;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: #fff;
-  }
-  
-  .logoImage {
-    width: 40px;
-    height: auto;
-    margin-right: 50px;
-  }
-  
-  .navItems {
-    display: flex;
-    gap: 10px;
-  }
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}
+
+.logoImage {
+  width: 40px;
+  height: auto;
+  margin-right: 50px;
+}
+
+.navItems {
+  display: flex;
+  gap: 10px;
+}

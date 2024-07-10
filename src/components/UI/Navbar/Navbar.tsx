@@ -12,19 +12,19 @@ export const Navbar: React.FC = () => {
         <img src={img} alt="Logo" className={cl.logoImage} />
       </Link>
       <div className={cl.navItems}>
-            <Link to="/favorites">
-              <MyButton label="Избранное" onClick={() => {}} />
-            </Link>
-            <Link to="/history">
-              <MyButton label="История" onClick={() => {}} />
-            </Link>
-            <Link to="/signin">
-              <MyButton label="Вход" onClick={() => {}} />
-            </Link>
-            <Link to="/signup">
-              <MyButton label="Регистрация" onClick={() => {}} />
-            </Link>
-            <MyButton label="Выход" onClick={() => {}} />
+        <Link to="/favorites">
+          <MyButton label="Избранное" onClick={() => {}} />
+        </Link>
+        <Link to="/history">
+          <MyButton label="История" onClick={() => {}} />
+        </Link>
+        <Link to="/signin">
+          <MyButton label="Вход" onClick={() => {}} />
+        </Link>
+        <Link to="/signup">
+          <MyButton label="Регистрация" onClick={() => {}} />
+        </Link>
+        <MyButton label="Выход" onClick={() => {}} />
       </div>
     </div>
   )

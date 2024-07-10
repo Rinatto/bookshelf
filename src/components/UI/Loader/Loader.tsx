@@ -1,9 +1,5 @@
-import cl from './Loader.module.css'
+import cl from "./Loader.module.css"
 
 export const Loader = () => {
-    return (
-        <div className={cl.loader}>
-            
-        </div>
-    );
-};
+  return <div className={cl.loader}></div>
+}

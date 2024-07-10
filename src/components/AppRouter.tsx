@@ -1,13 +1,31 @@
-import { Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes } from "react-router-dom"
 
-import { About } from "../pages/About"
-import { Error } from "../pages/Error"
+import { privateRoutes, publicRoutes } from "../router/index"
 
-export const AppRouter = () => {
-    return (
-      <Routes>
-        <Route path="/" element={<About />} />
-        <Route path="*" element={<Error />} />
-      </Routes>
-    );
-};
+interface AppRouterProps {
+  isAuth: boolean
+}
+
+export const AppRouter: React.FC<AppRouterProps> = ({ isAuth }) => {
+  return isAuth ? (
+    <Routes>
+      {privateRoutes.map(route => {
+        const Component = route.component
+        return (
+          <Route path={route.path} element={<Component />} key={route.path} />
+        )
+      })}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  ) : (
+    <Routes>
+      {publicRoutes.map(route => {
+        const Component = route.component
+        return (
+          <Route path={route.path} element={<Component />} key={route.path} />
+        )
+      })}
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  )
+}
