@@ -6,6 +6,8 @@ import { AuthContext } from '../components/AuthContext';
 import { BookCard } from '../components/BookCard';
 import { MyButton } from '../components/UI/MyButton/MyButton';
 
+import st from "../styles/Favorites.module.css"
+
 interface Book {
   imageUrl: string;
   id: string;
@@ -27,31 +29,27 @@ export const Favorites: React.FC = () => {
       return;
     }
 
-    const loadFavorites = () => {
-      const favIds = JSON.parse(localStorage.getItem('favorites') || '[]');
-      setFavorites(favIds);
-      fetchFavoriteBooks(favIds);
-    };
-
-    loadFavorites();
-
-    async function fetchFavoriteBooks(favIds: string[]) {
-      const booksData = await Promise.all(
-        favIds.map(id =>
-          fetch(`https://www.googleapis.com/books/v1/volumes/${id}`)
-            .then(res => res.json())
-            .then(data => ({
-              id: data.id,
-              title: data.volumeInfo.title,
-              authors: data.volumeInfo.authors || ['Unknown author'],
-              description: data.volumeInfo.description || 'No description available.',
-              imageUrl: data.volumeInfo.imageLinks?.thumbnail || '',
-            }))
-        )
-      );
-      setBooks(booksData);
-    }
+    const favIds = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setFavorites(favIds);
+    fetchFavoriteBooks(favIds);
   }, [isAuth, navigate]);
+
+  async function fetchFavoriteBooks(favIds: string[]) {
+    const booksData = await Promise.all(
+      favIds.map(id =>
+        fetch(`https://www.googleapis.com/books/v1/volumes/${id}`)
+          .then(res => res.json())
+          .then(data => ({
+            id: data.id,
+            title: data.volumeInfo.title,
+            authors: data.volumeInfo.authors || ['Unknown author'],
+            description: data.volumeInfo.description || 'No description available.',
+            imageUrl: data.volumeInfo.imageLinks?.thumbnail || '',
+          }))
+      )
+    );
+    setBooks(booksData);
+  };
 
   const removeFromFavorites = (id: string) => {
     const updatedFavorites = favorites.filter(favId => favId !== id);
@@ -68,13 +66,13 @@ export const Favorites: React.FC = () => {
 
   return (
     <div>
-      <h1>Your Favorites</h1>
+      <h1>Избранные книги</h1>
       {favorites.length > 0 ? (
-        <MyButton label="Clear Favorites" onClick={clearFavorites} />
+        <MyButton label="Очистить избранное" onClick={clearFavorites} />
       ) : (
-        <p>No favorite books added yet.</p>
+        <p>Добавьте книги в избранное</p>
       )}
-      <div>
+      <div className={st.cardsContainer}>
         {books.map(book => (
           <BookCard
             key={book.id}

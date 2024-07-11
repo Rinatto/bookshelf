@@ -33,3 +33,14 @@
   color: #555;
   margin: 4px 0 16px;
 }
+
+.favorite {
+  background-color: green;
+  color: white;
+}
+
+.notFavorite {
+  background-color: blue;
+  color: white;
+}
+
