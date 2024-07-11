@@ -43,4 +43,10 @@
   background-color: blue;
   color: white;
 }
-
+.notFavorite {
+  background-color: blue;
+  color: white;
+}
+.viewDetails {
+  margin-top: 10px;
+}

@@ -1,92 +1,99 @@
-import type React from 'react';
-import { useContext,useEffect, useState } from 'react';
-import { useNavigate,useParams } from 'react-router-dom';
+import type React from "react"
+import { useContext, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import DOMPurify from "dompurify"
 
-import { AuthContext } from '../components/AuthContext';
-import { Loader } from '../components/UI/Loader/Loader';
-import { MyButton } from '../components/UI/MyButton/MyButton';
+import { AuthContext } from "../components/AuthContext"
+import { Loader } from "../components/UI/Loader/Loader"
+import { MyButton } from "../components/UI/MyButton/MyButton"
 
 interface Book {
-  id: string;
-  title: string;
-  authors: string[];
-  description: string;
-  imageUrl: string;
+  id: string
+  title: string
+  authors: string[]
+  description: string
+  imageUrl: string
 }
 
 export const ItemPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const [book, setBook] = useState<Book | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isFavorite, setIsFavorite] = useState(false);
-    const { isAuth } = useContext(AuthContext);
-    const navigate = useNavigate();
-  
-    useEffect(() => {
-      const fetchBook = async () => {
-        try {
-          const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${id}`);
-          const data = await response.json();
-          const bookData: Book = {
-            id: data.id,
-            title: data.volumeInfo.title,
-            authors: data.volumeInfo.authors || [],
-            description: data.volumeInfo.description || 'No description available.',
-            imageUrl: data.volumeInfo.imageLinks?.thumbnail || '',
-          };
-          setBook(bookData);
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
+  const { id } = useParams<{ id: string }>()
+  const [book, setBook] = useState<Book | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const { isAuth } = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/books/v1/volumes/${id}`,
+        )
+        const data = await response.json()
+        const bookData: Book = {
+          id: data.id,
+          title: data.volumeInfo.title,
+          authors: data.volumeInfo.authors || [],
+          description: DOMPurify.sanitize(
+            data.volumeInfo.description || "No description available.",
+          ),
+          imageUrl: data.volumeInfo.imageLinks?.thumbnail || "",
         }
-      };
-  
-      fetchBook();
-    }, [id]);
-  
-    useEffect(() => {
-      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-      if (favorites.includes(id)) {
-        setIsFavorite(true);
+        setBook(bookData)
+        setLoading(false)
+      } catch (error) {
+        setLoading(false)
       }
-    }, [id]);
-  
-    const handleFavoriteClick = () => {
-      if (!isAuth) {
-        navigate('/signin');
-        return;
-      }
-  
-      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-      if (favorites.includes(id)) {
-        const updatedFavorites = favorites.filter((favId: string) => favId !== id);
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-        setIsFavorite(false);
-      } else {
-        favorites.push(id);
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        setIsFavorite(true);
-      }
-    };
-  
-    if (loading) {
-      return <Loader />;
     }
-  
-    if (!book) {
-      return <p>Book not found.</p>;
+
+    fetchBook()
+  }, [id])
+
+  useEffect(() => {
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
+    if (favorites.includes(id)) {
+      setIsFavorite(true)
     }
-  
-    return (
-      <div>
-        <h1>{book.title}</h1>
-        <img src={book.imageUrl} alt={book.title} />
-        <p><strong>Authors:</strong> {book.authors.join(', ')}</p>
-        <p>{book.description}</p>
-        <MyButton
-          label={isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-          onClick={handleFavoriteClick}
-        />
-      </div>
-    );
-  };
+  }, [id])
+
+  const handleFavoriteClick = () => {
+    if (!isAuth) {
+      navigate("/signin")
+      return
+    }
+
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
+    if (favorites.includes(id)) {
+      const updatedFavorites = favorites.filter((favId: string) => favId !== id)
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
+      setIsFavorite(false)
+    } else {
+      favorites.push(id)
+      localStorage.setItem("favorites", JSON.stringify(favorites))
+      setIsFavorite(true)
+    }
+  }
+
+  if (loading) {
+    return <Loader />
+  }
+
+  if (!book) {
+    return <p>Book not found.</p>
+  }
+
+  return (
+    <div>
+      <h1>{book.title}</h1>
+      <img src={book.imageUrl} alt={book.title} />
+      <p>
+        <strong>Authors:</strong> {book.authors.join(", ")}
+      </p>
+      <p>{book.description}</p>
+      <MyButton
+        label={isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
+        onClick={handleFavoriteClick}
+      />
+    </div>
+  )
+}

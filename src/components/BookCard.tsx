@@ -27,6 +27,10 @@ export const BookCard: React.FC<BookCardProps> = ({
   const navigate = useNavigate()
   const [isFavorite, setIsFavorite] = useState(false)
 
+  const goToItemPage = () => {
+    navigate(`/books/${id}`)
+  }
+
   useEffect(() => {
     const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
     setIsFavorite(favorites.includes(id))
@@ -65,6 +69,14 @@ export const BookCard: React.FC<BookCardProps> = ({
           label={isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
           onClick={handleToggleFavorite}
           className={isFavorite ? cl.favorite : cl.notFavorite}
+        />
+        <MyButton
+          label="Подробнее"
+          onClick={e => {
+            e.stopPropagation()
+            goToItemPage()
+          }}
+          className={cl.viewDetails}
         />
       </div>
     </div>

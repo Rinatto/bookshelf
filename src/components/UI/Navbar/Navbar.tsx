@@ -1,21 +1,21 @@
-import type React from 'react';
-import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import type React from "react"
+import { useContext } from "react"
+import { Link, useNavigate } from "react-router-dom"
 
-import logo from '../../../../public/book.png';
-import { AuthContext } from '../../AuthContext';
-import { MyButton } from '../MyButton/MyButton';
+import logo from "../../../../public/book.png"
+import { AuthContext } from "../../AuthContext"
+import { MyButton } from "../MyButton/MyButton"
 
-import cl from './Navbar.module.css';
+import cl from "./Navbar.module.css"
 
 export const Navbar: React.FC = () => {
-  const { isAuth, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { isAuth, logout } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const handleLogout = () => {
-    logout();
-    navigate('/signin');
-  };
+    logout()
+    navigate("/signin")
+  }
 
   return (
     <div className={cl.navbar}>
@@ -45,5 +45,5 @@ export const Navbar: React.FC = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}

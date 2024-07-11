@@ -1,38 +1,38 @@
-import type React from 'react';
-import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import type React from "react"
+import { useContext, useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from '../components/AuthContext';
-import { BookCard } from '../components/BookCard';
-import { MyButton } from '../components/UI/MyButton/MyButton';
+import { AuthContext } from "../components/AuthContext"
+import { BookCard } from "../components/BookCard"
+import { MyButton } from "../components/UI/MyButton/MyButton"
 
 import st from "../styles/Favorites.module.css"
 
 interface Book {
-  imageUrl: string;
-  id: string;
-  title: string;
-  authors: string[];
-  description: string;
-  coverImageUrl?: string;
+  imageUrl: string
+  id: string
+  title: string
+  authors: string[]
+  description: string
+  coverImageUrl?: string
 }
 
 export const Favorites: React.FC = () => {
-  const { isAuth } = useContext(AuthContext);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [books, setBooks] = useState<Book[]>([]);
-  const navigate = useNavigate();
+  const { isAuth } = useContext(AuthContext)
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [books, setBooks] = useState<Book[]>([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!isAuth) {
-      navigate('/signin');
-      return;
+      navigate("/signin")
+      return
     }
 
-    const favIds = JSON.parse(localStorage.getItem('favorites') || '[]');
-    setFavorites(favIds);
-    fetchFavoriteBooks(favIds);
-  }, [isAuth, navigate]);
+    const favIds = JSON.parse(localStorage.getItem("favorites") || "[]")
+    setFavorites(favIds)
+    fetchFavoriteBooks(favIds)
+  }, [isAuth, navigate])
 
   async function fetchFavoriteBooks(favIds: string[]) {
     const booksData = await Promise.all(
@@ -42,27 +42,28 @@ export const Favorites: React.FC = () => {
           .then(data => ({
             id: data.id,
             title: data.volumeInfo.title,
-            authors: data.volumeInfo.authors || ['Unknown author'],
-            description: data.volumeInfo.description || 'No description available.',
-            imageUrl: data.volumeInfo.imageLinks?.thumbnail || '',
-          }))
-      )
-    );
-    setBooks(booksData);
-  };
+            authors: data.volumeInfo.authors || ["Unknown author"],
+            description:
+              data.volumeInfo.description || "No description available.",
+            imageUrl: data.volumeInfo.imageLinks?.thumbnail || "",
+          })),
+      ),
+    )
+    setBooks(booksData)
+  }
 
   const removeFromFavorites = (id: string) => {
-    const updatedFavorites = favorites.filter(favId => favId !== id);
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-    setFavorites(updatedFavorites);
-    setBooks(books.filter(book => book.id !== id));
-  };
+    const updatedFavorites = favorites.filter(favId => favId !== id)
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
+    setFavorites(updatedFavorites)
+    setBooks(books.filter(book => book.id !== id))
+  }
 
   const clearFavorites = () => {
-    localStorage.removeItem('favorites');
-    setFavorites([]);
-    setBooks([]);
-  };
+    localStorage.removeItem("favorites")
+    setFavorites([])
+    setBooks([])
+  }
 
   return (
     <div>
@@ -86,5 +87,5 @@ export const Favorites: React.FC = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
