@@ -59,14 +59,11 @@ export const About = () => {
             key={book.id}
             title={book.volumeInfo.title}
             authors={book.volumeInfo.authors || ["Unknown"]}
-            description={
-              book.volumeInfo.description || "No description available"
-            }
-            coverImageUrl={
-              book.volumeInfo.imageLinks?.thumbnail ||
-              "https://via.placeholder.com/128x195.png?text=No+Image"
-            }
-          />
+            description={book.volumeInfo.description || "No description available"}
+            coverImageUrl={book.volumeInfo.imageLinks?.thumbnail ||
+              "https://via.placeholder.com/128x195.png?text=No+Image"} id={""} onRemove={function (): void {
+                throw new Error("Function not implemented.")
+              } }          />
         ))}
       </div>
     </div>
