@@ -17,7 +17,7 @@ interface Book {
   }
 }
 
-export const About = () => {
+export const About: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -39,7 +39,6 @@ export const About = () => {
         setLoading(false)
       }
     }
-
     fetchBooks()
   }, [])
 
@@ -52,23 +51,22 @@ export const About = () => {
   }
 
   return (
-    <div>
-      <div className={cl.grid}>
-        {books.map(book => (
-          <BookCard
-            key={book.id}
-            title={book.volumeInfo.title}
-            authors={book.volumeInfo.authors || ["Unknown"]}
-            description={
-              book.volumeInfo.description || "No description available"
-            }
-            coverImageUrl={
-              book.volumeInfo.imageLinks?.thumbnail ||
-              "https://via.placeholder.com/128x195.png?text=No+Image"
-            }
-          />
-        ))}
-      </div>
+    <div className={cl.grid}>
+      {books.map(book => (
+        <BookCard
+          key={book.id}
+          id={book.id}
+          title={book.volumeInfo.title}
+          authors={book.volumeInfo.authors || ["Unknown"]}
+          description={
+            book.volumeInfo.description || "No description available"
+          }
+          coverImageUrl={
+            book.volumeInfo.imageLinks?.thumbnail ||
+            "https://via.placeholder.com/128x195.png?text=No+Image"
+          }
+        />
+      ))}
     </div>
   )
 }

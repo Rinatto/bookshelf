@@ -1,31 +1,37 @@
+import { useContext, useEffect } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 
 import { privateRoutes, publicRoutes } from "../router/index"
 
-interface AppRouterProps {
-  isAuth: boolean
-}
+import { AuthContext } from "./AuthContext"
 
-export const AppRouter: React.FC<AppRouterProps> = ({ isAuth }) => {
-  return isAuth ? (
+export const AppRouter: React.FC = () => {
+  const { isAuth, login } = useContext(AuthContext)
+
+  useEffect(() => {
+    const auth = localStorage.getItem("isAuth")
+    if (auth) {
+      login()
+    }
+  }, [login])
+
+  return (
     <Routes>
-      {privateRoutes.map(route => {
-        const Component = route.component
-        return (
-          <Route path={route.path} element={<Component />} key={route.path} />
-        )
-      })}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
-  ) : (
-    <Routes>
-      {publicRoutes.map(route => {
-        const Component = route.component
-        return (
-          <Route path={route.path} element={<Component />} key={route.path} />
-        )
-      })}
-      <Route path="*" element={<Navigate to="/login" />} />
+      {publicRoutes.map(route => (
+        <Route
+          path={route.path}
+          element={<route.component />}
+          key={route.path}
+        />
+      ))}
+      {privateRoutes.map(route => (
+        <Route
+          path={route.path}
+          element={isAuth ? <route.component /> : <Navigate to="/signin" />}
+          key={route.path}
+        />
+      ))}
+      <Route path="*" element={<Navigate to={isAuth ? "/" : "/signin"} />} />
     </Routes>
   )
 }
