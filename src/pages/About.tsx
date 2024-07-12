@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 
 import { BookCard } from "../components/BookCard"
+import { SearchBar } from "../components/SearchBar"
 import { Loader } from "../components/UI/Loader/Loader"
 
 import cl from "../styles/About.module.css"
@@ -23,10 +24,10 @@ export const About: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchBooks = async (query: string) => {
       try {
         const response = await fetch(
-          "https://www.googleapis.com/books/v1/volumes?q=javascript&projection=lite&maxResults=20",
+          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
         )
         if (!response.ok) {
           throw new Error("Network response was not ok")
@@ -39,8 +40,28 @@ export const About: React.FC = () => {
         setLoading(false)
       }
     }
-    fetchBooks()
+
+    fetchBooks("javascript") // Изначальный запрос
   }, [])
+
+  const handleSearch = (query: string) => {
+    setLoading(true)
+    setError(null)
+    setBooks([])
+
+    fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
+    )
+      .then(response => response.json())
+      .then(data => {
+        setBooks(data.items)
+        setLoading(false)
+      })
+      .catch(error => {
+        setError(error.message)
+        setLoading(false)
+      })
+  }
 
   if (loading) {
     return <Loader />
@@ -51,22 +72,25 @@ export const About: React.FC = () => {
   }
 
   return (
-    <div className={cl.grid}>
-      {books.map(book => (
-        <BookCard
-          key={book.id}
-          id={book.id}
-          title={book.volumeInfo.title}
-          authors={book.volumeInfo.authors || ["Unknown"]}
-          description={
-            book.volumeInfo.description || "No description available"
-          }
-          coverImageUrl={
-            book.volumeInfo.imageLinks?.thumbnail ||
-            "https://via.placeholder.com/128x195.png?text=No+Image"
-          }
-        />
-      ))}
+    <div>
+      <SearchBar onSearch={handleSearch} />
+      <div className={cl.grid}>
+        {books.map(book => (
+          <BookCard
+            key={book.id}
+            id={book.id}
+            title={book.volumeInfo.title}
+            authors={book.volumeInfo.authors || ["Unknown"]}
+            description={
+              book.volumeInfo.description || "No description available"
+            }
+            coverImageUrl={
+              book.volumeInfo.imageLinks?.thumbnail ||
+              "https://via.placeholder.com/128x195.png?text=No+Image"
+            }
+          />
+        ))}
+      </div>
     </div>
   )
 }

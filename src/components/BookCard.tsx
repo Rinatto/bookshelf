@@ -22,6 +22,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   authors,
   description,
   coverImageUrl,
+  onRemove,
 }) => {
   const { isAuth } = useContext(AuthContext)
   const navigate = useNavigate()
