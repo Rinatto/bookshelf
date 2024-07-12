@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 import { BookCard } from "../components/BookCard"
 import { SearchBar } from "../components/SearchBar"
@@ -24,6 +24,7 @@ export const About: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const fetchBooks = async (query: string) => {
     try {
@@ -52,7 +53,8 @@ export const About: React.FC = () => {
     setLoading(true)
     setError(null)
     setBooks([])
-    window.history.pushState(null, "", `/?search=${encodeURIComponent(query)}`)
+
+    navigate(`/?search=${encodeURIComponent(query)}`)
 
     fetchBooks(query)
   }
