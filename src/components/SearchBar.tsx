@@ -52,16 +52,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    saveSearchHistory(query)
     onSearch(query)
   }
 
   const handleButtonClick = () => {
+    saveSearchHistory(query)
     onSearch(query)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault()
+      saveSearchHistory(query)
       onSearch(query)
     }
   }
@@ -70,12 +73,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     navigate(`/books/${id}`)
   }
 
+  const saveSearchHistory = (query: string) => {
+    const searchHistory = JSON.parse(
+      localStorage.getItem("searchHistory") || "[]",
+    )
+    if (!searchHistory.includes(query)) {
+      searchHistory.push(query)
+      localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
+    }
+  }
+
   return (
     <div className="search-bar">
       <form onSubmit={handleSearch}>
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Поиск..."
           value={query}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setQuery(e.target.value)

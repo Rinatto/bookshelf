@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 
 import { BookCard } from "../components/BookCard"
 import { SearchBar } from "../components/SearchBar"
@@ -22,45 +23,38 @@ export const About: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const location = useLocation()
+
+  const fetchBooks = async (query: string) => {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
+      )
+      if (!response.ok) {
+        throw new Error("Network response was not ok")
+      }
+      const data = await response.json()
+      setBooks(data.items)
+    } catch (error: any) {
+      setError(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchBooks = async (query: string) => {
-      try {
-        const response = await fetch(
-          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
-        )
-        if (!response.ok) {
-          throw new Error("Network response was not ok")
-        }
-        const data = await response.json()
-        setBooks(data.items)
-      } catch (error: any) {
-        setError(error.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchBooks("javascript") // Изначальный запрос
-  }, [])
+    const searchParams = new URLSearchParams(location.search)
+    const query = searchParams.get("search") || "javascript"
+    fetchBooks(query)
+  }, [location.search])
 
   const handleSearch = (query: string) => {
     setLoading(true)
     setError(null)
     setBooks([])
+    window.history.pushState(null, "", `/?search=${encodeURIComponent(query)}`)
 
-    fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
-    )
-      .then(response => response.json())
-      .then(data => {
-        setBooks(data.items)
-        setLoading(false)
-      })
-      .catch(error => {
-        setError(error.message)
-        setLoading(false)
-      })
+    fetchBooks(query)
   }
 
   if (loading) {
