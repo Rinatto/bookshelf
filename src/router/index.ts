@@ -1,6 +1,6 @@
 import { About } from "../pages/About"
 import { Favorites } from "../pages/Favorites"
-import { History } from "../pages/History"
+import { HistoryPage } from "../pages/HistoryPage"
 import { ItemPage } from "../pages/ItemPage"
 import { SignIn } from "../pages/SignIn"
 import { Signup } from "../pages/SignUp"
@@ -14,5 +14,5 @@ export const publicRoutes = [
 
 export const privateRoutes = [
   { path: "/favorites", component: Favorites },
-  { path: "/history", component: History },
+  { path: "/history", component: HistoryPage },
 ]
