@@ -1,3 +1,5 @@
+import PropTypes from "prop-types"
+
 import cl from "./MyInput.module.css"
 
 interface MyInputProps {
@@ -22,4 +24,11 @@ export const MyInput: React.FC<MyInputProps> = ({
       placeholder={placeholder}
     />
   )
+}
+
+MyInput.propTypes = {
+  type: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
 }
