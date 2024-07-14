@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { BookCard } from "../components/BookCard"
 import { SearchBar } from "../components/SearchBar"
 import { Loader } from "../components/UI/Loader/Loader"
+import { useFetch } from "../hooks/useFetch"
 
 import cl from "../styles/About.module.css"
 
@@ -19,59 +20,46 @@ interface Book {
   }
 }
 
+interface BooksResponse {
+  items: Book[]
+}
+
 export const About: React.FC = () => {
-  const [books, setBooks] = useState<Book[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const [dataError, setDataError] = useState<string | null>(null)
   const location = useLocation()
   const navigate = useNavigate()
+  const searchParams = new URLSearchParams(location.search)
+  const query = searchParams.get("search") || "javascript"
 
-  const fetchBooks = async (query: string) => {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
-      )
-      if (!response.ok) {
-        throw new Error("Network response was not ok")
-      }
-      const data = await response.json()
-      setBooks(data.items)
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+  const { data, loading, error } = useFetch<BooksResponse>(
+    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
+  )
+
+  const handleSearch = (query: string) => {
+    navigate(`/?search=${encodeURIComponent(query)}`)
   }
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search)
-    const query = searchParams.get("search") || "javascript"
-    fetchBooks(query)
-  }, [location.search])
-
-  const handleSearch = (query: string) => {
-    setLoading(true)
-    setError(null)
-    setBooks([])
-
-    navigate(`/?search=${encodeURIComponent(query)}`)
-
-    fetchBooks(query)
-  }
+    if (data && !Array.isArray(data.items)) {
+      setDataError("Data is not an array")
+    } else {
+      setDataError(null)
+    }
+  }, [data])
 
   if (loading) {
     return <Loader />
   }
 
-  if (error) {
-    return <div>Error: {error}</div>
+  if (error || dataError) {
+    return <div>Error: {error || dataError}</div>
   }
 
   return (
     <div>
       <SearchBar onSearch={handleSearch} />
       <div className={cl.grid}>
-        {books.map(book => (
+        {data?.items?.map(book => (
           <BookCard
             key={book.id}
             id={book.id}

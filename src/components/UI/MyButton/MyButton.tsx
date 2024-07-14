@@ -1,3 +1,5 @@
+import PropTypes from "prop-types"
+
 import styles from "./MyButton.module.css"
 
 interface MyButtonProps {
@@ -16,4 +18,10 @@ export const MyButton: React.FC<MyButtonProps> = ({
       {label}
     </button>
   )
+}
+
+MyButton.propTypes = {
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
 }

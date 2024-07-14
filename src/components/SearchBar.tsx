@@ -2,6 +2,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { useDebounce } from "../hooks/useDebounce"
+
 import { MyButton } from "./UI/MyButton/MyButton"
 
 import "../styles/SearchBar.css"
@@ -40,15 +42,16 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>("")
   const [suggestions, setSuggestions] = useState<Book[]>([])
+  const debouncedQuery = useDebounce(query, 500)
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (query.length > 2) {
-      fetchSuggestions(query).then(setSuggestions)
+    if (debouncedQuery.length > 2) {
+      fetchSuggestions(debouncedQuery).then(setSuggestions)
     } else {
       setSuggestions([])
     }
-  }, [query])
+  }, [debouncedQuery])
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
