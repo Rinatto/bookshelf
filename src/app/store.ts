@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit"
 
+import { booksReducer } from "../features/books/booksSlice"
+
 export const store = configureStore({
-  reducer: {}, // Пустой объект, редюсеры будут добавлены позже
+  reducer: {
+    books: booksReducer,
+  },
 })
 
-// Экспорт типов корневого состояния и диспетчера для использования в типизированных хуках
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
