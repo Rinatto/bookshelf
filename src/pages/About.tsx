@@ -1,38 +1,29 @@
-import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { BookCard } from "../components/BookCard"
 import { SearchBar } from "../components/SearchBar"
 import { Loader } from "../components/UI/Loader/Loader"
-import { fetchBooks } from "../features/books/booksThunks"
+import { useFetchBooksQuery } from "../features/books/booksApi"
 
 import cl from "../styles/About.module.css"
 
 export const About: React.FC = () => {
-  const dispatch = useAppDispatch()
-  const { books, loading, error } = useAppSelector(state => state.books)
-
   const location = useLocation()
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search)
-    const query = searchParams.get("search") || "javascript"
-    dispatch(fetchBooks(query))
-  }, [dispatch, location.search])
+  const searchParams = new URLSearchParams(location.search)
+  const query = searchParams.get("search") || "javascript"
+  const { data: books = [], error, isLoading } = useFetchBooksQuery(query)
 
   const handleSearch = (query: string) => {
     navigate(`/?search=${encodeURIComponent(query)}`)
-    dispatch(fetchBooks(query))
   }
 
-  if (loading) {
+  if (isLoading) {
     return <Loader />
   }
 
   if (error) {
-    return <div>Error: {error}</div>
+    return <div>Error: {error.toString()}</div>
   }
 
   return (
