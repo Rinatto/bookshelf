@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import type React from "react"
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useMemo, useState } from "react"
 
 interface AuthContextType {
   isAuth: boolean
@@ -58,9 +58,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [])
 
+  const contextValue = useMemo(
+    () => ({ isAuth, user, login, logout, checkUser }),
+    [isAuth, user],
+  )
+
   return (
-    <AuthContext.Provider value={{ isAuth, user, login, logout, checkUser }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   )
 }
