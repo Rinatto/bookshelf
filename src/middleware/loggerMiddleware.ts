@@ -9,6 +9,11 @@ export const loggerMiddleware: Middleware<{}, any> =
       action,
       state: store.getState(),
     })
+
+    if (logs.length > 100) {
+      logs.shift()
+    }
+
     localStorage.setItem("redux-logs", JSON.stringify(logs))
 
     return result

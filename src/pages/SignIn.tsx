@@ -11,20 +11,16 @@ export const SignIn: React.FC = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const navigate = useNavigate()
-  const { login } = useContext(AuthContext)
+  const { login, checkUser } = useContext(AuthContext)
 
   const handleSignIn = (event: React.FormEvent) => {
     event.preventDefault()
 
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      const { email: storedEmail, password: storedPassword } =
-        JSON.parse(storedUser)
-      if (email === storedEmail && password === storedPassword) {
-        login()
-        navigate("/")
-        return
-      }
+    if (checkUser(email, password)) {
+      const user = { email, password }
+      login(user)
+      navigate("/")
+      return
     }
 
     setError("Invalid email or password")

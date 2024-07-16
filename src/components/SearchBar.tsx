@@ -1,7 +1,8 @@
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { AuthContext } from "../components/AuthContext"
 import { useDebounce } from "../hooks/useDebounce"
 
 import { MyButton } from "./UI/MyButton/MyButton"
@@ -43,6 +44,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>("")
   const [suggestions, setSuggestions] = useState<Book[]>([])
   const debouncedQuery = useDebounce(query, 500)
+  const { user } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -77,12 +79,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   }
 
   const saveSearchHistory = (query: string) => {
-    const searchHistory = JSON.parse(
-      localStorage.getItem("searchHistory") || "[]",
-    )
-    if (!searchHistory.includes(query)) {
-      searchHistory.push(query)
-      localStorage.setItem("searchHistory", JSON.stringify(searchHistory))
+    if (user) {
+      const searchHistoryKey = `${user.email}-searchHistory`
+      const searchHistory = JSON.parse(
+        localStorage.getItem(searchHistoryKey) || "[]",
+      )
+      if (!searchHistory.includes(query)) {
+        searchHistory.push(query)
+        localStorage.setItem(searchHistoryKey, JSON.stringify(searchHistory))
+      }
     }
   }
 

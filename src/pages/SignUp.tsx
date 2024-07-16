@@ -36,9 +36,24 @@ export const Signup: React.FC = () => {
       return
     }
 
-    localStorage.setItem("user", JSON.stringify({ email, password }))
+    const user = { email, password }
 
-    login()
+    const users = JSON.parse(localStorage.getItem("users") || "[]")
+
+    const userExists = users.some((u: { email: string }) => u.email === email)
+
+    if (userExists) {
+      setError("User with this email already exists")
+      return
+    }
+
+    users.push(user)
+    localStorage.setItem("users", JSON.stringify(users))
+
+    localStorage.setItem(`${user.email}-favorites`, JSON.stringify([]))
+    localStorage.setItem(`${user.email}-searchHistory`, JSON.stringify([]))
+
+    login(user)
 
     navigate("/")
   }
