@@ -1,5 +1,5 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { AuthContext } from "../components/AuthContext"
@@ -8,32 +8,43 @@ import { MyButton } from "../components/UI/MyButton/MyButton"
 import "../styles/HistoryPage.css"
 
 export const HistoryPage: React.FC = () => {
-  const { isAuth } = useContext(AuthContext)
+  const { isAuth, user } = useContext(AuthContext)
   const [searchHistory, setSearchHistory] = useState<string[]>([])
   const navigate = useNavigate()
 
+  const loadSearchHistory = useCallback(() => {
+    if (user) {
+      const history = JSON.parse(
+        localStorage.getItem(`${user.email}-searchHistory`) || "[]",
+      )
+      setSearchHistory(history)
+    }
+  }, [user])
+
   useEffect(() => {
-    if (!isAuth) {
+    if (!isAuth || !user) {
       navigate("/signin")
     } else {
       loadSearchHistory()
     }
-  }, [isAuth, navigate])
-
-  const loadSearchHistory = () => {
-    const history = JSON.parse(localStorage.getItem("searchHistory") || "[]")
-    setSearchHistory(history)
-  }
+  }, [isAuth, user, navigate, loadSearchHistory])
 
   const handleClearHistory = () => {
-    localStorage.removeItem("searchHistory")
-    setSearchHistory([])
+    if (user) {
+      localStorage.removeItem(`${user.email}-searchHistory`)
+      setSearchHistory([])
+    }
   }
 
   const handleRemoveQuery = (query: string) => {
-    const updatedHistory = searchHistory.filter(item => item !== query)
-    localStorage.setItem("searchHistory", JSON.stringify(updatedHistory))
-    setSearchHistory(updatedHistory)
+    if (user) {
+      const updatedHistory = searchHistory.filter(item => item !== query)
+      localStorage.setItem(
+        `${user.email}-searchHistory`,
+        JSON.stringify(updatedHistory),
+      )
+      setSearchHistory(updatedHistory)
+    }
   }
 
   const handleQueryClick = (query: string) => {

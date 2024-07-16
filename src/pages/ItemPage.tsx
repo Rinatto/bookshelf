@@ -20,7 +20,7 @@ export const ItemPage: React.FC = () => {
   const [book, setBook] = useState<Book | null>(null)
   const [loading, setLoading] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
-  const { isAuth } = useContext(AuthContext)
+  const { isAuth, user } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -50,26 +50,31 @@ export const ItemPage: React.FC = () => {
   }, [id])
 
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
-    if (favorites.includes(id)) {
-      setIsFavorite(true)
+    if (user) {
+      const favorites = JSON.parse(
+        localStorage.getItem(`${user.email}-favorites`) || "[]",
+      )
+      if (favorites.includes(id)) {
+        setIsFavorite(true)
+      }
     }
-  }, [id])
+  }, [id, user])
 
   const handleFavoriteClick = () => {
-    if (!isAuth) {
+    if (!isAuth || !user) {
       navigate("/signin")
       return
     }
 
-    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]")
+    const favoritesKey = `${user.email}-favorites`
+    const favorites = JSON.parse(localStorage.getItem(favoritesKey) || "[]")
     if (favorites.includes(id)) {
       const updatedFavorites = favorites.filter((favId: string) => favId !== id)
-      localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
+      localStorage.setItem(favoritesKey, JSON.stringify(updatedFavorites))
       setIsFavorite(false)
     } else {
       favorites.push(id)
-      localStorage.setItem("favorites", JSON.stringify(favorites))
+      localStorage.setItem(favoritesKey, JSON.stringify(favorites))
       setIsFavorite(true)
     }
   }

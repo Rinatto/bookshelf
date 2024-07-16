@@ -1,5 +1,5 @@
 import type React from "react"
-import { Suspense, useContext, useEffect } from "react"
+import { Suspense, useContext } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 
 import { privateRoutes, publicRoutes } from "../router/index"
@@ -8,14 +8,7 @@ import { Loader } from "./UI/Loader/Loader"
 import { AuthContext } from "./AuthContext"
 
 export const AppRouter: React.FC = () => {
-  const { isAuth, login } = useContext(AuthContext)
-
-  useEffect(() => {
-    const auth = localStorage.getItem("isAuth")
-    if (auth) {
-      login()
-    }
-  }, [login])
+  const { isAuth } = useContext(AuthContext)
 
   return (
     <Suspense fallback={<Loader />}>

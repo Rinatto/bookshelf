@@ -1,9 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit"
 
+import { booksApi } from "../features/books/booksApi"
+import { booksReducer } from "../features/books/booksSlice"
+import { loggerMiddleware } from "../middleware/loggerMiddleware"
+
 export const store = configureStore({
-  reducer: {}, // Пустой объект, редюсеры будут добавлены позже
+  reducer: {
+    books: booksReducer,
+    [booksApi.reducerPath]: booksApi.reducer,
+  },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware().concat(booksApi.middleware, loggerMiddleware),
 })
 
-// Экспорт типов корневого состояния и диспетчера для использования в типизированных хуках
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

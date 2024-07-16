@@ -67,6 +67,12 @@
     {
       "files": ["*{test,spec}.{t,j}s?(x)"],
       "env": { "jest": true }
+    },
+    {
+      "files": ["src/app/hooks.ts"],
+      "rules": {
+        "@typescript-eslint/no-restricted-imports": "off"
+      }
     }
   ],
   "settings": {

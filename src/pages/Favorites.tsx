@@ -18,21 +18,23 @@ interface Book {
 }
 
 export const Favorites: React.FC = () => {
-  const { isAuth } = useContext(AuthContext)
+  const { isAuth, user } = useContext(AuthContext)
   const [favorites, setFavorites] = useState<string[]>([])
   const [books, setBooks] = useState<Book[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isAuth) {
+    if (!isAuth || !user) {
       navigate("/signin")
       return
     }
 
-    const favIds = JSON.parse(localStorage.getItem("favorites") || "[]")
+    const favIds = JSON.parse(
+      localStorage.getItem(`${user.email}-favorites`) || "[]",
+    )
     setFavorites(favIds)
     fetchFavoriteBooks(favIds)
-  }, [isAuth, navigate])
+  }, [isAuth, user, navigate])
 
   async function fetchFavoriteBooks(favIds: string[]) {
     const booksData = await Promise.all(
@@ -54,15 +56,20 @@ export const Favorites: React.FC = () => {
 
   const removeFromFavorites = (id: string) => {
     const updatedFavorites = favorites.filter(favId => favId !== id)
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
+    localStorage.setItem(
+      `${user?.email}-favorites`,
+      JSON.stringify(updatedFavorites),
+    )
     setFavorites(updatedFavorites)
     setBooks(books.filter(book => book.id !== id))
   }
 
   const clearFavorites = () => {
-    localStorage.removeItem("favorites")
-    setFavorites([])
-    setBooks([])
+    if (user) {
+      localStorage.removeItem(`${user.email}-favorites`)
+      setFavorites([])
+      setBooks([])
+    }
   }
 
   return (
