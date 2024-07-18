@@ -22,15 +22,30 @@
   - [Рендеринг книг](src/pages/About.tsx)
 - [x] Реализована хотя бы одна форма.
   - [Форма входа](src/pages/SignIn.tsx)
-  - [Форма регистрации](src/pages/Signup.tsx)
+  - [Форма регистрации](src/pages/SignUp.tsx)
 - [x] Есть применение Context API.
   - [AuthContext](src/components/AuthContext.tsx)
 - [x] Есть применение предохранителя.
   - [ErrorBoundary](src/components/WithErrorBoundary.tsx)
 - [x] Есть хотя бы один кастомный хук.
-  - [useDebounce](src/hooks/useDebounce.ts)
+  - [useFetch](src/hooks/useFetch.ts)
 - [x] Хотя бы несколько компонентов используют PropTypes.
-  - [Пример компонента с PropTypes](src/components/BookCard.tsx)
+  - [Пример компонента MyButton с PropTypes](src/components/UI/MyButton/MyButton.tsx)
+  - [Пример компонента MyInput с PropTypes](src/components/UI/Input/MyInput.tsx)
+- [x] Поиск не должен триггерить много запросов к серверу.
+  - [useDebounce](src/hooks/useDebounce.ts)
+- [x] Есть применение lazy + Suspense.
+  - [lazy + Suspense](src/components/AppRouter.tsx)
+- [x] Используем Modern Redux with Redux Toolkit.
+  - [Modern Redux with Redux Toolkit](src/app/store.ts)
+- [x] Используем слайсы.
+  - [слайсы](src/features/books/booksSlice.ts)
+- [x] Есть хотя бы одна кастомная мидлвара.
+  - [кастомная мидлвара](src/middleware/loggerMiddleware.ts)
+- [x] Используется RTK Query.
+  - [RTK Query](src/features/books/booksApi.ts)
+- [x] Используется Transforming Responses.
+  - [Transforming Responses](src/features/books/booksApi.ts#L26)
 
 ## Необязательные требования
 
