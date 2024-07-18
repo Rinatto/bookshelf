@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../components/AuthContext"
 import { MyInput } from "../components/UI/Input/MyInput"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { storageService } from "../services/storageService"
 
 export const Signup: React.FC = () => {
   const [email, setEmail] = useState("")
@@ -37,7 +38,6 @@ export const Signup: React.FC = () => {
     }
 
     const user = { email, password }
-
     const users = JSON.parse(localStorage.getItem("users") || "[]")
 
     const userExists = users.some((u: { email: string }) => u.email === email)
@@ -47,14 +47,8 @@ export const Signup: React.FC = () => {
       return
     }
 
-    users.push(user)
-    localStorage.setItem("users", JSON.stringify(users))
-
-    localStorage.setItem(`${user.email}-favorites`, JSON.stringify([]))
-    localStorage.setItem(`${user.email}-searchHistory`, JSON.stringify([]))
-
+    storageService.saveUser(user)
     login(user)
-
     navigate("/")
   }
 

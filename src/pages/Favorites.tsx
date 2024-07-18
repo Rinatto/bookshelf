@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../components/AuthContext"
 import { BookCard } from "../components/BookCard"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { storageService } from "../services/storageService"
 
 import st from "../styles/Favorites.module.css"
 
@@ -29,9 +30,7 @@ export const Favorites: React.FC = () => {
       return
     }
 
-    const favIds = JSON.parse(
-      localStorage.getItem(`${user.email}-favorites`) || "[]",
-    )
+    const favIds = storageService.getFavorites(user.email)
     setFavorites(favIds)
     fetchFavoriteBooks(favIds)
   }, [isAuth, user, navigate])
@@ -55,18 +54,17 @@ export const Favorites: React.FC = () => {
   }
 
   const removeFromFavorites = (id: string) => {
-    const updatedFavorites = favorites.filter(favId => favId !== id)
-    localStorage.setItem(
-      `${user?.email}-favorites`,
-      JSON.stringify(updatedFavorites),
-    )
-    setFavorites(updatedFavorites)
-    setBooks(books.filter(book => book.id !== id))
+    if (user) {
+      const updatedFavorites = favorites.filter(favId => favId !== id)
+      storageService.saveFavorites(user.email, updatedFavorites)
+      setFavorites(updatedFavorites)
+      setBooks(books.filter(book => book.id !== id))
+    }
   }
 
   const clearFavorites = () => {
     if (user) {
-      localStorage.removeItem(`${user.email}-favorites`)
+      storageService.saveFavorites(user.email, [])
       setFavorites([])
       setBooks([])
     }

@@ -6,6 +6,7 @@ import DOMPurify from "dompurify"
 import { AuthContext } from "../components/AuthContext"
 import { Loader } from "../components/UI/Loader/Loader"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { storageService } from "../services/storageService"
 
 interface Book {
   id: string
@@ -25,6 +26,9 @@ export const ItemPage: React.FC = () => {
 
   useEffect(() => {
     const fetchBook = async () => {
+      if (!id) {
+        return
+      }
       try {
         const response = await fetch(
           `https://www.googleapis.com/books/v1/volumes/${id}`,
@@ -50,31 +54,26 @@ export const ItemPage: React.FC = () => {
   }, [id])
 
   useEffect(() => {
-    if (user) {
-      const favorites = JSON.parse(
-        localStorage.getItem(`${user.email}-favorites`) || "[]",
-      )
-      if (favorites.includes(id)) {
-        setIsFavorite(true)
-      }
+    if (user && id) {
+      const favorites = storageService.getFavorites(user.email)
+      setIsFavorite(favorites.includes(id))
     }
   }, [id, user])
 
   const handleFavoriteClick = () => {
-    if (!isAuth || !user) {
+    if (!isAuth || !user || !id) {
       navigate("/signin")
       return
     }
 
-    const favoritesKey = `${user.email}-favorites`
-    const favorites = JSON.parse(localStorage.getItem(favoritesKey) || "[]")
+    const favorites = storageService.getFavorites(user.email)
     if (favorites.includes(id)) {
       const updatedFavorites = favorites.filter((favId: string) => favId !== id)
-      localStorage.setItem(favoritesKey, JSON.stringify(updatedFavorites))
+      storageService.saveFavorites(user.email, updatedFavorites)
       setIsFavorite(false)
     } else {
       favorites.push(id)
-      localStorage.setItem(favoritesKey, JSON.stringify(favorites))
+      storageService.saveFavorites(user.email, favorites)
       setIsFavorite(true)
     }
   }

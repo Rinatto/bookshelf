@@ -2,6 +2,8 @@ import type React from "react"
 import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { storageService } from "../services/storageService"
+
 import { MyButton } from "./UI/MyButton/MyButton"
 import { AuthContext } from "./AuthContext"
 
@@ -34,9 +36,7 @@ export const BookCard: React.FC<BookCardProps> = ({
 
   useEffect(() => {
     if (user) {
-      const favorites = JSON.parse(
-        localStorage.getItem(`${user.email}-favorites`) || "[]",
-      )
+      const favorites = storageService.getFavorites(user.email)
       setIsFavorite(favorites.includes(id))
     }
   }, [id, user])
@@ -46,15 +46,14 @@ export const BookCard: React.FC<BookCardProps> = ({
       navigate("/signin")
       return
     }
-    const favoritesKey = `${user.email}-favorites`
-    const favorites = JSON.parse(localStorage.getItem(favoritesKey) || "[]")
+    const favorites = storageService.getFavorites(user.email)
     if (favorites.includes(id)) {
       const newFavorites = favorites.filter((favId: string) => favId !== id)
-      localStorage.setItem(favoritesKey, JSON.stringify(newFavorites))
+      storageService.saveFavorites(user.email, newFavorites)
       setIsFavorite(false)
     } else {
       favorites.push(id)
-      localStorage.setItem(favoritesKey, JSON.stringify(favorites))
+      storageService.saveFavorites(user.email, favorites)
       setIsFavorite(true)
     }
   }

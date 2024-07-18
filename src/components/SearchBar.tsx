@@ -1,9 +1,10 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { AuthContext } from "../components/AuthContext"
 import { useDebounce } from "../hooks/useDebounce"
+import { storageService } from "../services/storageService"
 
 import { MyButton } from "./UI/MyButton/MyButton"
 
@@ -78,18 +79,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     navigate(`/books/${id}`)
   }
 
-  const saveSearchHistory = (query: string) => {
-    if (user) {
-      const searchHistoryKey = `${user.email}-searchHistory`
-      const searchHistory = JSON.parse(
-        localStorage.getItem(searchHistoryKey) || "[]",
-      )
-      if (!searchHistory.includes(query)) {
-        searchHistory.push(query)
-        localStorage.setItem(searchHistoryKey, JSON.stringify(searchHistory))
+  const saveSearchHistory = useCallback(
+    (query: string) => {
+      if (user) {
+        const searchHistory = storageService.getSearchHistory(user.email)
+        if (!searchHistory.includes(query)) {
+          searchHistory.push(query)
+          storageService.saveSearchHistory(user.email, searchHistory)
+        }
       }
-    }
-  }
+    },
+    [user],
+  )
 
   return (
     <div className="search-bar">

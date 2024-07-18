@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 
 import { AuthContext } from "../components/AuthContext"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { storageService } from "../services/storageService"
 
 import "../styles/HistoryPage.css"
 
@@ -14,9 +15,7 @@ export const HistoryPage: React.FC = () => {
 
   const loadSearchHistory = useCallback(() => {
     if (user) {
-      const history = JSON.parse(
-        localStorage.getItem(`${user.email}-searchHistory`) || "[]",
-      )
+      const history = storageService.getSearchHistory(user.email)
       setSearchHistory(history)
     }
   }, [user])
@@ -31,7 +30,7 @@ export const HistoryPage: React.FC = () => {
 
   const handleClearHistory = () => {
     if (user) {
-      localStorage.removeItem(`${user.email}-searchHistory`)
+      storageService.clearSearchHistory(user.email)
       setSearchHistory([])
     }
   }
@@ -39,10 +38,7 @@ export const HistoryPage: React.FC = () => {
   const handleRemoveQuery = (query: string) => {
     if (user) {
       const updatedHistory = searchHistory.filter(item => item !== query)
-      localStorage.setItem(
-        `${user.email}-searchHistory`,
-        JSON.stringify(updatedHistory),
-      )
+      storageService.saveSearchHistory(user.email, updatedHistory)
       setSearchHistory(updatedHistory)
     }
   }

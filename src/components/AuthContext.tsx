@@ -2,6 +2,8 @@ import type { ReactNode } from "react"
 import type React from "react"
 import { createContext, useCallback, useEffect, useMemo, useState } from "react"
 
+import { storageService } from "../services/storageService"
+
 interface AuthContextType {
   isAuth: boolean
   user: { email: string; password: string } | null
@@ -26,38 +28,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     null,
   )
 
-  const login = useCallback(
-    (user: { email: string; password: string }): void => {
-      setIsAuth(true)
-      setUser(user)
-      localStorage.setItem("isAuth", "true")
-      localStorage.setItem("currentUser", JSON.stringify(user))
-    },
-    [],
-  )
-
-  const logout = useCallback((): void => {
-    setIsAuth(false)
-    setUser(null)
-    localStorage.removeItem("isAuth")
-    localStorage.removeItem("currentUser")
+  const login = useCallback((user: { email: string; password: string }) => {
+    setIsAuth(true)
+    setUser(user)
+    storageService.saveAuthState(true, user)
   }, [])
 
-  const checkUser = useCallback((email: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
-    const foundUser = users.find(
-      (u: { email: string; password: string }) =>
-        u.email === email && u.password === password,
-    )
-    return !!foundUser
+  const logout = useCallback(() => {
+    setIsAuth(false)
+    setUser(null)
+    storageService.clearAuthState()
+  }, [])
+
+  const checkUser = useCallback((email: string, password: string) => {
+    const foundUser = storageService.getUser(email)
+    return foundUser?.password === password
   }, [])
 
   useEffect(() => {
-    const auth = localStorage.getItem("isAuth")
-    const storedUser = localStorage.getItem("currentUser")
-    if (auth && storedUser) {
+    const auth = storageService.getAuthState()
+    if (auth.isAuth && auth.user) {
       setIsAuth(true)
-      setUser(JSON.parse(storedUser))
+      setUser(auth.user)
     }
   }, [])
 
