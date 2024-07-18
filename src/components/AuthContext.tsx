@@ -26,21 +26,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     null,
   )
 
-  const login = useCallback((user: { email: string; password: string }) => {
-    setIsAuth(true)
-    setUser(user)
-    localStorage.setItem("isAuth", "true")
-    localStorage.setItem("currentUser", JSON.stringify(user))
-  }, [])
+  const login = useCallback(
+    (user: { email: string; password: string }): void => {
+      setIsAuth(true)
+      setUser(user)
+      localStorage.setItem("isAuth", "true")
+      localStorage.setItem("currentUser", JSON.stringify(user))
+    },
+    [],
+  )
 
-  const logout = useCallback(() => {
+  const logout = useCallback((): void => {
     setIsAuth(false)
     setUser(null)
     localStorage.removeItem("isAuth")
     localStorage.removeItem("currentUser")
   }, [])
 
-  const checkUser = useCallback((email: string, password: string) => {
+  const checkUser = useCallback((email: string, password: string): boolean => {
     const users = JSON.parse(localStorage.getItem("users") || "[]")
     const foundUser = users.find(
       (u: { email: string; password: string }) =>
