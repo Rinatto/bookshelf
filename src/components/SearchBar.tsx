@@ -45,6 +45,7 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>("")
   const [suggestions, setSuggestions] = useState<Book[]>([])
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false)
   const debouncedQuery = useDebounce(query, 500)
   const user = useAppSelector(selectUser)
   const navigate = useNavigate()
@@ -61,11 +62,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     event.preventDefault()
     saveSearchHistory(query)
     onSearch(query)
+    setShowSuggestions(false)
   }
 
   const handleButtonClick = () => {
     saveSearchHistory(query)
     onSearch(query)
+    setShowSuggestions(false)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -73,11 +76,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       event.preventDefault()
       saveSearchHistory(query)
       onSearch(query)
+      setShowSuggestions(false)
     }
   }
 
   const handleSuggestionClick = (id: string) => {
     navigate(`/books/${id}`)
+    setShowSuggestions(false)
   }
 
   const saveSearchHistory = useCallback(
@@ -104,13 +109,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
             setQuery(e.target.value)
           }
           onKeyDown={handleKeyDown}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setShowSuggestions(false)}
         />
         <MyButton label="Искать" onClick={handleButtonClick} />
       </form>
-      {suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && (
         <ul className="suggestions-list">
           {suggestions.map(book => (
-            <li key={book.id} onClick={() => handleSuggestionClick(book.id)}>
+            <li
+              key={book.id}
+              onMouseDown={() => handleSuggestionClick(book.id)}
+            >
               {book.volumeInfo.title}
             </li>
           ))}
