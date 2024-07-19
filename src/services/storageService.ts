@@ -7,6 +7,8 @@ interface StorageService {
   saveSearchHistory(email: string, searchHistory: string[]): void
   getSearchHistory(email: string): string[]
   clearSearchHistory(email: string): void
+  clearFavorites(email: string): void
+  checkUser(email: string, password: string): boolean
   saveAuthState(
     isAuth: boolean,
     user: { email: string; password: string } | null,
@@ -40,7 +42,7 @@ export const storageService: StorageService = {
     return JSON.parse(localStorage.getItem(`${email}-favorites`) || "[]")
   },
   saveSearchHistory: (email, searchHistory) => {
-    const uniqueHistory = Array.from(new Set(searchHistory)) // Удаляем дубликаты
+    const uniqueHistory = Array.from(new Set(searchHistory))
     localStorage.setItem(
       `${email}-searchHistory`,
       JSON.stringify(uniqueHistory),
@@ -64,5 +66,15 @@ export const storageService: StorageService = {
   clearAuthState: () => {
     localStorage.removeItem("isAuth")
     localStorage.removeItem("currentUser")
+  },
+  clearFavorites: email => {
+    localStorage.removeItem(`${email}-favorites`)
+  },
+  checkUser: (email, password) => {
+    const users = JSON.parse(localStorage.getItem("users") || "[]")
+    return users.some(
+      (u: { email: string; password: string }) =>
+        u.email === email && u.password === password,
+    )
   },
 }

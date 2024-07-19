@@ -1,18 +1,19 @@
 import type React from "react"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppDispatch } from "../app/hooks"
 import { MyInput } from "../components/UI/Input/MyInput"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { login } from "../features/auth/authSlice"
 import { storageService } from "../services/storageService"
 
 export const Signup: React.FC = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { login } = useContext(AuthContext)
 
   const validateEmail = (email: string) => {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -38,7 +39,8 @@ export const Signup: React.FC = () => {
     }
 
     const user = { email, password }
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
+
+    const users = storageService.getUsers()
 
     const userExists = users.some((u: { email: string }) => u.email === email)
 
@@ -48,7 +50,8 @@ export const Signup: React.FC = () => {
     }
 
     storageService.saveUser(user)
-    login(user)
+    dispatch(login(user))
+
     navigate("/")
   }
 

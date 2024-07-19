@@ -1,8 +1,9 @@
 import type React from "react"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppSelector } from "../app/hooks"
+import { selectUser } from "../features/auth/selectors"
 import { useDebounce } from "../hooks/useDebounce"
 import { storageService } from "../services/storageService"
 
@@ -45,7 +46,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>("")
   const [suggestions, setSuggestions] = useState<Book[]>([])
   const debouncedQuery = useDebounce(query, 500)
-  const { user } = useContext(AuthContext)
+  const user = useAppSelector(selectUser)
   const navigate = useNavigate()
 
   useEffect(() => {

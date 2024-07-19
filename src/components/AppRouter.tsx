@@ -1,14 +1,15 @@
 import type React from "react"
-import { Suspense, useContext } from "react"
+import { Suspense } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 
+import { useAppSelector } from "../app/hooks"
+import { getIsAuth } from "../features/auth/selectors"
 import { privateRoutes, publicRoutes } from "../router/index"
 
 import { Loader } from "./UI/Loader/Loader"
-import { AuthContext } from "./AuthContext"
 
 export const AppRouter: React.FC = () => {
-  const { isAuth } = useContext(AuthContext)
+  const isAuth = useAppSelector(getIsAuth)
 
   return (
     <Suspense fallback={<Loader />}>

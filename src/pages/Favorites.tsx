@@ -1,10 +1,12 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { BookCard } from "../components/BookCard"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { setFavorites } from "../features/auth/authSlice"
+import { getFavorites, getIsAuth, getUser } from "../features/auth/selectors"
 import { storageService } from "../services/storageService"
 
 import st from "../styles/Favorites.module.css"
@@ -19,21 +21,20 @@ interface Book {
 }
 
 export const Favorites: React.FC = () => {
-  const { isAuth, user } = useContext(AuthContext)
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [books, setBooks] = useState<Book[]>([])
+  const isAuth = useAppSelector(getIsAuth)
+  const user = useAppSelector(getUser)
+  const favorites = useAppSelector(getFavorites)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const [books, setBooks] = useState<Book[]>([])
 
   useEffect(() => {
     if (!isAuth || !user) {
       navigate("/signin")
       return
     }
-
-    const favIds = storageService.getFavorites(user.email)
-    setFavorites(favIds)
-    fetchFavoriteBooks(favIds)
-  }, [isAuth, user, navigate])
+    fetchFavoriteBooks(favorites)
+  }, [isAuth, user, navigate, favorites])
 
   async function fetchFavoriteBooks(favIds: string[]) {
     const booksData = await Promise.all(
@@ -54,18 +55,16 @@ export const Favorites: React.FC = () => {
   }
 
   const removeFromFavorites = (id: string) => {
-    if (user) {
-      const updatedFavorites = favorites.filter(favId => favId !== id)
-      storageService.saveFavorites(user.email, updatedFavorites)
-      setFavorites(updatedFavorites)
-      setBooks(books.filter(book => book.id !== id))
-    }
+    const updatedFavorites = favorites.filter(favId => favId !== id)
+    dispatch(setFavorites(updatedFavorites))
+    storageService.saveFavorites(user?.email || "", updatedFavorites)
+    setBooks(books.filter(book => book.id !== id))
   }
 
   const clearFavorites = () => {
     if (user) {
-      storageService.saveFavorites(user.email, [])
-      setFavorites([])
+      storageService.clearFavorites(user.email)
+      dispatch(setFavorites([]))
       setBooks([])
     }
   }

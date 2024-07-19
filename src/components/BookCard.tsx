@@ -1,11 +1,16 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { storageService } from "../services/storageService"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
+import { addFavorite, removeFavorite } from "../features/auth/authSlice"
+import {
+  selectFavorites,
+  selectIsAuth,
+  selectUser,
+} from "../features/auth/selectors"
 
 import { MyButton } from "./UI/MyButton/MyButton"
-import { AuthContext } from "./AuthContext"
 
 import cl from "../styles/BookCard.module.css"
 
@@ -26,7 +31,10 @@ export const BookCard: React.FC<BookCardProps> = ({
   coverImageUrl,
   onRemove,
 }) => {
-  const { isAuth, user } = useContext(AuthContext)
+  const isAuth = useAppSelector(selectIsAuth)
+  const user = useAppSelector(selectUser)
+  const favorites = useAppSelector(selectFavorites)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [isFavorite, setIsFavorite] = useState(false)
 
@@ -36,24 +44,20 @@ export const BookCard: React.FC<BookCardProps> = ({
 
   useEffect(() => {
     if (user) {
-      const favorites = storageService.getFavorites(user.email)
       setIsFavorite(favorites.includes(id))
     }
-  }, [id, user])
+  }, [id, user, favorites])
 
   const handleToggleFavorite = () => {
     if (!isAuth || !user) {
       navigate("/signin")
       return
     }
-    const favorites = storageService.getFavorites(user.email)
     if (favorites.includes(id)) {
-      const newFavorites = favorites.filter((favId: string) => favId !== id)
-      storageService.saveFavorites(user.email, newFavorites)
+      dispatch(removeFavorite(id))
       setIsFavorite(false)
     } else {
-      favorites.push(id)
-      storageService.saveFavorites(user.email, favorites)
+      dispatch(addFavorite(id))
       setIsFavorite(true)
     }
   }

@@ -1,11 +1,13 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import DOMPurify from "dompurify"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
+import type { RootState } from "../app/store"
 import { Loader } from "../components/UI/Loader/Loader"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { addFavorite, removeFavorite } from "../features/auth/authSlice"
 import { storageService } from "../services/storageService"
 
 interface Book {
@@ -20,15 +22,20 @@ export const ItemPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const [book, setBook] = useState<Book | null>(null)
   const [loading, setLoading] = useState(true)
+  const isAuth = useAppSelector((state: RootState) => state.auth.isAuth)
+  const user = useAppSelector((state: RootState) => state.auth.user)
+  const favorites = useAppSelector((state: RootState) => state.auth.favorites)
   const [isFavorite, setIsFavorite] = useState(false)
-  const { isAuth, user } = useContext(AuthContext)
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
+    if (!id) {
+      navigate("/") // Redirect if id is undefined
+      return
+    }
+
     const fetchBook = async () => {
-      if (!id) {
-        return
-      }
       try {
         const response = await fetch(
           `https://www.googleapis.com/books/v1/volumes/${id}`,
@@ -51,29 +58,26 @@ export const ItemPage: React.FC = () => {
     }
 
     fetchBook()
-  }, [id])
+  }, [id, navigate])
 
   useEffect(() => {
-    if (user && id) {
+    if (user) {
       const favorites = storageService.getFavorites(user.email)
-      setIsFavorite(favorites.includes(id))
+      setIsFavorite(favorites.includes(id!))
     }
   }, [id, user])
 
   const handleFavoriteClick = () => {
-    if (!isAuth || !user || !id) {
+    if (!isAuth || !user) {
       navigate("/signin")
       return
     }
 
-    const favorites = storageService.getFavorites(user.email)
-    if (favorites.includes(id)) {
-      const updatedFavorites = favorites.filter((favId: string) => favId !== id)
-      storageService.saveFavorites(user.email, updatedFavorites)
+    if (favorites.includes(id!)) {
+      dispatch(removeFavorite(id!))
       setIsFavorite(false)
     } else {
-      favorites.push(id)
-      storageService.saveFavorites(user.email, favorites)
+      dispatch(addFavorite(id!))
       setIsFavorite(true)
     }
   }

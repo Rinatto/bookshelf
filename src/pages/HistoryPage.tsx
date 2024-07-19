@@ -1,45 +1,43 @@
 import type React from "react"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { MyButton } from "../components/UI/MyButton/MyButton"
-import { storageService } from "../services/storageService"
+import {
+  clearSearchHistory,
+  removeSearchQuery,
+} from "../features/auth/authSlice"
+import {
+  getIsAuth,
+  getSearchHistory,
+  getUser,
+} from "../features/auth/selectors"
 
 import "../styles/HistoryPage.css"
 
 export const HistoryPage: React.FC = () => {
-  const { isAuth, user } = useContext(AuthContext)
-  const [searchHistory, setSearchHistory] = useState<string[]>([])
   const navigate = useNavigate()
-
-  const loadSearchHistory = useCallback(() => {
-    if (user) {
-      const history = storageService.getSearchHistory(user.email)
-      setSearchHistory(history)
-    }
-  }, [user])
+  const isAuth = useAppSelector(getIsAuth)
+  const user = useAppSelector(getUser)
+  const searchHistory = useAppSelector(getSearchHistory)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (!isAuth || !user) {
       navigate("/signin")
-    } else {
-      loadSearchHistory()
     }
-  }, [isAuth, user, navigate, loadSearchHistory])
+  }, [isAuth, user, navigate])
 
   const handleClearHistory = () => {
     if (user) {
-      storageService.clearSearchHistory(user.email)
-      setSearchHistory([])
+      dispatch(clearSearchHistory())
     }
   }
 
   const handleRemoveQuery = (query: string) => {
     if (user) {
-      const updatedHistory = searchHistory.filter(item => item !== query)
-      storageService.saveSearchHistory(user.email, updatedHistory)
-      setSearchHistory(updatedHistory)
+      dispatch(removeSearchQuery(query))
     }
   }
 

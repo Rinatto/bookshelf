@@ -1,19 +1,21 @@
 import type React from "react"
-import { useContext } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
 import logo from "../../../../public/book.png"
-import { AuthContext } from "../../AuthContext"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
+import { logout } from "../../../features/auth/authSlice"
+import { selectIsAuth } from "../../../features/auth/selectors"
 import { MyButton } from "../MyButton/MyButton"
 
 import cl from "./Navbar.module.css"
 
 export const Navbar: React.FC = () => {
-  const { isAuth, logout } = useContext(AuthContext)
+  const isAuth = useAppSelector(selectIsAuth)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    logout()
+    dispatch(logout())
     navigate("/signin")
   }
 
