@@ -4,9 +4,18 @@
   display: flex;
   align-items: center;
   padding: 0 15px;
-  background: lightblue;
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
+}
+.navbar.light {
+  --navbar-bg: lightblue;
+  --navbar-text: #000000;
 }
 
+.navbar.dark {
+  --navbar-bg: darkgray;
+  --navbar-text: #ffffff;
+}
 .logo {
   display: flex;
   align-items: center;
@@ -23,4 +32,8 @@
 .navItems {
   display: flex;
   gap: 10px;
+}
+
+.themeToggle {
+  margin-left: auto;
 }

@@ -24,7 +24,7 @@
   - [Форма входа](src/pages/SignIn.tsx)
   - [Форма регистрации](src/pages/SignUp.tsx)
 - [x] Есть применение Context API.
-  - [AuthContext](src/components/AuthContext.tsx)
+  - [ThemeContext](src/components/ThemeContext.tsx)
 - [x] Есть применение предохранителя.
   - [ErrorBoundary](src/components/WithErrorBoundary.tsx)
 - [x] Есть хотя бы один кастомный хук.

@@ -4,15 +4,17 @@ import { Link, useNavigate } from "react-router-dom"
 import logo from "../../../../public/book.png"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { logout } from "../../../features/auth/authSlice"
-import { selectIsAuth } from "../../../features/auth/selectors"
+import { getIsAuth } from "../../../features/auth/selectors"
+import { useTheme } from "../../ThemeContext"
 import { MyButton } from "../MyButton/MyButton"
 
 import cl from "./Navbar.module.css"
 
 export const Navbar: React.FC = () => {
-  const isAuth = useAppSelector(selectIsAuth)
+  const isAuth = useAppSelector(getIsAuth)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { isDarkTheme, toggleTheme } = useTheme()
 
   const handleLogout = () => {
     dispatch(logout())
@@ -20,7 +22,7 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <div className={cl.navbar}>
+    <div className={`${cl.navbar} ${isDarkTheme ? cl.dark : cl.light}`}>
       <Link to="/" className={cl.logo}>
         <img src={logo} alt="Logo" className={cl.logoImage} />
       </Link>
@@ -45,6 +47,12 @@ export const Navbar: React.FC = () => {
             </Link>
           </>
         )}
+      </div>
+      <div className={cl.themeToggle}>
+        <MyButton
+          label={isDarkTheme ? "Светлая тема" : "Темная тема"}
+          onClick={toggleTheme}
+        />
       </div>
     </div>
   )
