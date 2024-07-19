@@ -38,7 +38,8 @@
 - [x] Поиск не должен триггерить много запросов к серверу.
   - [useDebounce](src/hooks/useDebounce.ts)
 - [x] Есть применение lazy + Suspense.
-  - [lazy + Suspense](src/components/AppRouter.tsx)
+  - [lazy](src/router/index.ts)
+  - [Suspense](src/components/AppRouter.tsx)
 
 ## Reduce
 
