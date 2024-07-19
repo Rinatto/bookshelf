@@ -1,9 +1,16 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { useAppDispatch, useAppSelector } from "../app/hooks"
+import { addFavorite, removeFavorite } from "../features/auth/authSlice"
+import {
+  selectFavorites,
+  selectIsAuth,
+  selectUser,
+} from "../features/auth/selectors"
+
 import { MyButton } from "./UI/MyButton/MyButton"
-import { AuthContext } from "./AuthContext"
 
 import cl from "../styles/BookCard.module.css"
 
@@ -24,7 +31,10 @@ export const BookCard: React.FC<BookCardProps> = ({
   coverImageUrl,
   onRemove,
 }) => {
-  const { isAuth, user } = useContext(AuthContext)
+  const isAuth = useAppSelector(selectIsAuth)
+  const user = useAppSelector(selectUser)
+  const favorites = useAppSelector(selectFavorites)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [isFavorite, setIsFavorite] = useState(false)
 
@@ -34,27 +44,20 @@ export const BookCard: React.FC<BookCardProps> = ({
 
   useEffect(() => {
     if (user) {
-      const favorites = JSON.parse(
-        localStorage.getItem(`${user.email}-favorites`) || "[]",
-      )
       setIsFavorite(favorites.includes(id))
     }
-  }, [id, user])
+  }, [id, user, favorites])
 
   const handleToggleFavorite = () => {
     if (!isAuth || !user) {
       navigate("/signin")
       return
     }
-    const favoritesKey = `${user.email}-favorites`
-    const favorites = JSON.parse(localStorage.getItem(favoritesKey) || "[]")
     if (favorites.includes(id)) {
-      const newFavorites = favorites.filter((favId: string) => favId !== id)
-      localStorage.setItem(favoritesKey, JSON.stringify(newFavorites))
+      dispatch(removeFavorite(id))
       setIsFavorite(false)
     } else {
-      favorites.push(id)
-      localStorage.setItem(favoritesKey, JSON.stringify(favorites))
+      dispatch(addFavorite(id))
       setIsFavorite(true)
     }
   }

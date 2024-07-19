@@ -1,11 +1,14 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import DOMPurify from "dompurify"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
+import type { RootState } from "../app/store"
 import { Loader } from "../components/UI/Loader/Loader"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { addFavorite, removeFavorite } from "../features/auth/authSlice"
+import { storageService } from "../services/storageService"
 
 interface Book {
   id: string
@@ -19,11 +22,19 @@ export const ItemPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const [book, setBook] = useState<Book | null>(null)
   const [loading, setLoading] = useState(true)
+  const isAuth = useAppSelector((state: RootState) => state.auth.isAuth)
+  const user = useAppSelector((state: RootState) => state.auth.user)
+  const favorites = useAppSelector((state: RootState) => state.auth.favorites)
   const [isFavorite, setIsFavorite] = useState(false)
-  const { isAuth, user } = useContext(AuthContext)
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
+    if (!id) {
+      navigate("/")
+      return
+    }
+
     const fetchBook = async () => {
       try {
         const response = await fetch(
@@ -47,16 +58,12 @@ export const ItemPage: React.FC = () => {
     }
 
     fetchBook()
-  }, [id])
+  }, [id, navigate])
 
   useEffect(() => {
     if (user) {
-      const favorites = JSON.parse(
-        localStorage.getItem(`${user.email}-favorites`) || "[]",
-      )
-      if (favorites.includes(id)) {
-        setIsFavorite(true)
-      }
+      const favorites = storageService.getFavorites(user.email)
+      setIsFavorite(favorites.includes(id!))
     }
   }, [id, user])
 
@@ -66,15 +73,11 @@ export const ItemPage: React.FC = () => {
       return
     }
 
-    const favoritesKey = `${user.email}-favorites`
-    const favorites = JSON.parse(localStorage.getItem(favoritesKey) || "[]")
-    if (favorites.includes(id)) {
-      const updatedFavorites = favorites.filter((favId: string) => favId !== id)
-      localStorage.setItem(favoritesKey, JSON.stringify(updatedFavorites))
+    if (favorites.includes(id!)) {
+      dispatch(removeFavorite(id!))
       setIsFavorite(false)
     } else {
-      favorites.push(id)
-      localStorage.setItem(favoritesKey, JSON.stringify(favorites))
+      dispatch(addFavorite(id!))
       setIsFavorite(true)
     }
   }

@@ -23,7 +23,8 @@ export const booksApi = createApi({
     fetchBooks: builder.query<Book[], string>({
       query: query =>
         `volumes?q=${encodeURIComponent(query)}&projection=lite&maxResults=20`,
-      transformResponse: (response: { items: Book[] }) => response.items,
+      transformResponse: (response: { items: Book[] }): Book[] =>
+        response.items,
     }),
   }),
 })

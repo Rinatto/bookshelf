@@ -1,10 +1,13 @@
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from "../components/AuthContext"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { BookCard } from "../components/BookCard"
 import { MyButton } from "../components/UI/MyButton/MyButton"
+import { setFavorites } from "../features/auth/authSlice"
+import { getFavorites, getIsAuth, getUser } from "../features/auth/selectors"
+import { storageService } from "../services/storageService"
 
 import st from "../styles/Favorites.module.css"
 
@@ -18,23 +21,20 @@ interface Book {
 }
 
 export const Favorites: React.FC = () => {
-  const { isAuth, user } = useContext(AuthContext)
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [books, setBooks] = useState<Book[]>([])
+  const isAuth = useAppSelector(getIsAuth)
+  const user = useAppSelector(getUser)
+  const favorites = useAppSelector(getFavorites)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const [books, setBooks] = useState<Book[]>([])
 
   useEffect(() => {
     if (!isAuth || !user) {
       navigate("/signin")
       return
     }
-
-    const favIds = JSON.parse(
-      localStorage.getItem(`${user.email}-favorites`) || "[]",
-    )
-    setFavorites(favIds)
-    fetchFavoriteBooks(favIds)
-  }, [isAuth, user, navigate])
+    fetchFavoriteBooks(favorites)
+  }, [isAuth, user, navigate, favorites])
 
   async function fetchFavoriteBooks(favIds: string[]) {
     const booksData = await Promise.all(
@@ -56,18 +56,15 @@ export const Favorites: React.FC = () => {
 
   const removeFromFavorites = (id: string) => {
     const updatedFavorites = favorites.filter(favId => favId !== id)
-    localStorage.setItem(
-      `${user?.email}-favorites`,
-      JSON.stringify(updatedFavorites),
-    )
-    setFavorites(updatedFavorites)
+    dispatch(setFavorites(updatedFavorites))
+    storageService.saveFavorites(user?.email || "", updatedFavorites)
     setBooks(books.filter(book => book.id !== id))
   }
 
   const clearFavorites = () => {
     if (user) {
-      localStorage.removeItem(`${user.email}-favorites`)
-      setFavorites([])
+      storageService.clearFavorites(user.email)
+      dispatch(setFavorites([]))
       setBooks([])
     }
   }

@@ -1,15 +1,13 @@
 import type React from "react"
-import { Suspense, useContext } from "react"
+import { Suspense } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 
-import { privateRoutes, publicRoutes } from "../router/index"
+import { privateRoutes, publicRoutes } from "../router"
 
 import { Loader } from "./UI/Loader/Loader"
-import { AuthContext } from "./AuthContext"
+import { PrivateRoute } from "./PrivateRoute"
 
 export const AppRouter: React.FC = () => {
-  const { isAuth } = useContext(AuthContext)
-
   return (
     <Suspense fallback={<Loader />}>
       <Routes>
@@ -20,14 +18,16 @@ export const AppRouter: React.FC = () => {
             key={route.path}
           />
         ))}
-        {privateRoutes.map(route => (
-          <Route
-            path={route.path}
-            element={isAuth ? <route.component /> : <Navigate to="/signin" />}
-            key={route.path}
-          />
-        ))}
-        <Route path="*" element={<Navigate to={isAuth ? "/" : "/signin"} />} />
+        <Route element={<PrivateRoute />}>
+          {privateRoutes.map(route => (
+            <Route
+              path={route.path}
+              element={<route.component />}
+              key={route.path}
+            />
+          ))}
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Suspense>
   )
