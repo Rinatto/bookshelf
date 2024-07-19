@@ -31,7 +31,7 @@ export const ItemPage: React.FC = () => {
 
   useEffect(() => {
     if (!id) {
-      navigate("/") // Redirect if id is undefined
+      navigate("/")
       return
     }
 

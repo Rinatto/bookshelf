@@ -1,10 +1,12 @@
 import type { Middleware } from "@reduxjs/toolkit"
 
+import { storageService } from "../services/storageService"
+
 export const loggerMiddleware: Middleware<{}, any> =
   store => next => action => {
     const result = next(action)
 
-    const logs = JSON.parse(localStorage.getItem("redux-logs") || "[]")
+    let logs = storageService.getLogs()
     logs.push({
       action,
       state: store.getState(),
@@ -13,8 +15,6 @@ export const loggerMiddleware: Middleware<{}, any> =
     if (logs.length > 100) {
       logs.shift()
     }
-
-    localStorage.setItem("redux-logs", JSON.stringify(logs))
 
     return result
   }

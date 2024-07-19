@@ -6,13 +6,16 @@
 - Используемое API: Google Books API.
 - Адрес приложения: [Bookshelf на Netlify](https://main--bookshelfrinatto.netlify.app/)
 
-## Обязательные требования
+# Обязательные требования
 
 - [x] Реализованы требования к функциональности.
 - [x] Для хранения учетных записей пользователей, их Избранного и Истории поиска, используем LocalStorage.
   - [AuthContext](src/components/AuthContext.tsx)
   - [Favorites](src/pages/Favorites.tsx)
   - [HistoryPage](src/pages/HistoryPage.tsx)
+
+## React
+
 - [x] Пишем функциональные компоненты с хуками в приоритете над классовыми.
   - [Все компоненты](src/components)
 - [x] Есть разделение на умные и глупые компоненты.
@@ -36,6 +39,9 @@
   - [useDebounce](src/hooks/useDebounce.ts)
 - [x] Есть применение lazy + Suspense.
   - [lazy + Suspense](src/components/AppRouter.tsx)
+
+## Reduce
+
 - [x] Используем Modern Redux with Redux Toolkit.
   - [Modern Redux with Redux Toolkit](src/app/store.ts)
 - [x] Используем слайсы.
@@ -47,8 +53,11 @@
 - [x] Используется Transforming Responses.
   - [Transforming Responses](src/features/books/booksApi.ts#L26)
 
-## Необязательные требования
+# Необязательные требования
 
 - [x] Использован TypeScript.
+- [x] Низкая связанность клиентского кода с хранилищем.
+  - [storageService](src/services/storageService.ts)
+  - Клиентский код приложения не завязан жестко на конкретное хранилище данных. В данном приложении используется storageService для работы с LocalStorage, что позволяет легко заменить его на другое хранилище, например, Firebase, изменив код только в одном месте.
 - [x] Настроен CI/CD.
   - [Настройки CI/CD](.github/workflows/deploy.yml)

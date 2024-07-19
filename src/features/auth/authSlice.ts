@@ -1,6 +1,8 @@
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { createSlice } from "@reduxjs/toolkit"
 
+import { storageService } from "../../services/storageService"
+
 interface AuthState {
   user: { email: string; password: string } | null
   isAuth: boolean
@@ -8,11 +10,16 @@ interface AuthState {
   searchHistory: string[]
 }
 
+const authState = storageService.getAuthState()
 const initialState: AuthState = {
-  user: null,
-  isAuth: false,
-  favorites: [],
-  searchHistory: [],
+  user: authState.user,
+  isAuth: authState.isAuth,
+  favorites: authState.user
+    ? storageService.getFavorites(authState.user.email)
+    : [],
+  searchHistory: authState.user
+    ? storageService.getSearchHistory(authState.user.email)
+    : [],
 }
 
 const authSlice = createSlice({
@@ -22,16 +29,16 @@ const authSlice = createSlice({
     login(state, action: PayloadAction<{ email: string; password: string }>) {
       state.user = action.payload
       state.isAuth = true
-      const favorites = JSON.parse(
-        localStorage.getItem(`${action.payload.email}-favorites`) || "[]",
+      state.favorites = storageService.getFavorites(action.payload.email)
+      state.searchHistory = storageService.getSearchHistory(
+        action.payload.email,
       )
-      state.favorites = favorites
-      const searchHistory = JSON.parse(
-        localStorage.getItem(`${action.payload.email}-searchHistory`) || "[]",
-      )
-      state.searchHistory = searchHistory
+      storageService.saveAuthState(true, action.payload)
     },
     logout(state) {
+      if (state.user) {
+        storageService.clearAuthState()
+      }
       state.user = null
       state.isAuth = false
       state.favorites = []
@@ -39,15 +46,15 @@ const authSlice = createSlice({
     },
     setFavorites(state, action: PayloadAction<string[]>) {
       state.favorites = action.payload
+      if (state.user) {
+        storageService.saveFavorites(state.user.email, action.payload)
+      }
     },
     addFavorite(state, action: PayloadAction<string>) {
       if (!state.favorites.includes(action.payload)) {
         state.favorites.push(action.payload)
         if (state.user) {
-          localStorage.setItem(
-            `${state.user.email}-favorites`,
-            JSON.stringify(state.favorites),
-          )
+          storageService.saveFavorites(state.user.email, state.favorites)
         }
       }
     },
@@ -56,28 +63,22 @@ const authSlice = createSlice({
         favorite => favorite !== action.payload,
       )
       if (state.user) {
-        localStorage.setItem(
-          `${state.user.email}-favorites`,
-          JSON.stringify(state.favorites),
-        )
+        storageService.saveFavorites(state.user.email, state.favorites)
       }
     },
     setSearchHistory(state, action: PayloadAction<string[]>) {
       state.searchHistory = action.payload
       if (state.user) {
-        localStorage.setItem(
-          `${state.user.email}-searchHistory`,
-          JSON.stringify(state.searchHistory),
-        )
+        storageService.saveSearchHistory(state.user.email, action.payload)
       }
     },
     addSearchQuery(state, action: PayloadAction<string>) {
       if (!state.searchHistory.includes(action.payload)) {
         state.searchHistory.push(action.payload)
         if (state.user) {
-          localStorage.setItem(
-            `${state.user.email}-searchHistory`,
-            JSON.stringify(state.searchHistory),
+          storageService.saveSearchHistory(
+            state.user.email,
+            state.searchHistory,
           )
         }
       }
@@ -87,17 +88,14 @@ const authSlice = createSlice({
         query => query !== action.payload,
       )
       if (state.user) {
-        localStorage.setItem(
-          `${state.user.email}-searchHistory`,
-          JSON.stringify(state.searchHistory),
-        )
+        storageService.saveSearchHistory(state.user.email, state.searchHistory)
       }
     },
     clearSearchHistory(state) {
-      state.searchHistory = []
       if (state.user) {
-        localStorage.removeItem(`${state.user.email}-searchHistory`)
+        storageService.clearSearchHistory(state.user.email)
       }
+      state.searchHistory = []
     },
   },
 })

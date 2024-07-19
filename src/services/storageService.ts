@@ -18,6 +18,8 @@ interface StorageService {
     user: { email: string; password: string } | null
   }
   clearAuthState(): void
+  saveLogs(logs: any[]): void
+  getLogs(): any[]
 }
 
 export const storageService: StorageService = {
@@ -76,5 +78,11 @@ export const storageService: StorageService = {
       (u: { email: string; password: string }) =>
         u.email === email && u.password === password,
     )
+  },
+  saveLogs: logs => {
+    localStorage.setItem("redux-logs", JSON.stringify(logs))
+  },
+  getLogs: () => {
+    return JSON.parse(localStorage.getItem("redux-logs") || "[]")
   },
 }
