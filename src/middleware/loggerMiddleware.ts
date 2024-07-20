@@ -1,6 +1,6 @@
 import type { Middleware } from "@reduxjs/toolkit"
 
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 export const loggerMiddleware: Middleware<{}, any> =
   store => next => action => {
@@ -15,6 +15,8 @@ export const loggerMiddleware: Middleware<{}, any> =
     if (logs.length > 100) {
       logs.shift()
     }
+
+    storageService.saveLogs(logs)
 
     return result
   }

@@ -1,13 +1,12 @@
 import type React from "react"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { BookCard } from "../components/BookCard"
 import { MyButton } from "../components/UI/MyButton/MyButton"
 import { setFavorites } from "../features/auth/authSlice"
-import { getFavorites, getIsAuth, getUser } from "../features/auth/selectors"
-import { storageService } from "../services/storageService"
+import { getFavorites, getUser } from "../features/auth/selectors"
+import { storageService } from "../services"
 
 import st from "../styles/Favorites.module.css"
 
@@ -21,20 +20,16 @@ interface Book {
 }
 
 export const Favorites: React.FC = () => {
-  const isAuth = useAppSelector(getIsAuth)
   const user = useAppSelector(getUser)
   const favorites = useAppSelector(getFavorites)
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const [books, setBooks] = useState<Book[]>([])
 
   useEffect(() => {
-    if (!isAuth || !user) {
-      navigate("/signin")
-      return
+    if (user) {
+      fetchFavoriteBooks(favorites)
     }
-    fetchFavoriteBooks(favorites)
-  }, [isAuth, user, navigate, favorites])
+  }, [user, favorites])
 
   async function fetchFavoriteBooks(favIds: string[]) {
     const booksData = await Promise.all(

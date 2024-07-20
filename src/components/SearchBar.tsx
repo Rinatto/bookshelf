@@ -1,11 +1,11 @@
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 import { useAppSelector } from "../app/hooks"
 import { selectUser } from "../features/auth/selectors"
 import { useDebounce } from "../hooks/useDebounce"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 import { MyButton } from "./UI/MyButton/MyButton"
 
@@ -49,6 +49,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const debouncedQuery = useDebounce(query, 500)
   const user = useAppSelector(selectUser)
   const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const searchQuery = params.get("search")
+    if (searchQuery) {
+      setQuery(searchQuery)
+    }
+  }, [location.search])
 
   useEffect(() => {
     if (debouncedQuery.length > 2) {
