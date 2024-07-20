@@ -1,13 +1,16 @@
 import type React from "react"
+import { useEffect } from "react"
 
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { MyButton } from "../components/UI/MyButton/MyButton"
 import {
   clearSearchHistory,
   removeSearchQuery,
+  setSearchHistory,
 } from "../features/auth/authSlice"
 import { getSearchHistory, getUser } from "../features/auth/selectors"
 import { useSearchNavigation } from "../hooks/useSearchNavigation"
+import { storageService } from "../services"
 
 import "../styles/HistoryPage.css"
 
@@ -16,6 +19,13 @@ export const HistoryPage: React.FC = () => {
   const searchHistory = useAppSelector(getSearchHistory)
   const dispatch = useAppDispatch()
   const navigateToSearch = useSearchNavigation()
+
+  useEffect(() => {
+    if (user) {
+      const history = storageService.getSearchHistory(user.email)
+      dispatch(setSearchHistory(history))
+    }
+  }, [user, dispatch])
 
   const handleClearHistory = () => {
     if (user) {
