@@ -8,7 +8,7 @@ import type { RootState } from "../app/store"
 import { Loader } from "../components/UI/Loader/Loader"
 import { MyButton } from "../components/UI/MyButton/MyButton"
 import { addFavorite, removeFavorite } from "../features/auth/authSlice"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 interface Book {
   id: string

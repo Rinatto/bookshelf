@@ -1,6 +1,6 @@
 import type { Middleware } from "@reduxjs/toolkit"
 
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 export const loggerMiddleware: Middleware<{}, any> =
   store => next => action => {

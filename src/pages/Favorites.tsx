@@ -6,7 +6,7 @@ import { BookCard } from "../components/BookCard"
 import { MyButton } from "../components/UI/MyButton/MyButton"
 import { setFavorites } from "../features/auth/authSlice"
 import { getFavorites, getUser } from "../features/auth/selectors"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 import st from "../styles/Favorites.module.css"
 

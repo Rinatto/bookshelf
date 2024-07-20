@@ -4,7 +4,7 @@ import { authReducer } from "../features/auth/authSlice"
 import { booksApi } from "../features/books/booksApi"
 import { authMiddleware } from "../middleware/authMiddleware"
 import { loggerMiddleware } from "../middleware/loggerMiddleware"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 const preloadedState = storageService.getAuthState()
 

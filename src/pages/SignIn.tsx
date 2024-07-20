@@ -6,7 +6,7 @@ import { useAppDispatch } from "../app/hooks"
 import { MyInput } from "../components/UI/Input/MyInput"
 import { MyButton } from "../components/UI/MyButton/MyButton"
 import { login } from "../features/auth/authSlice"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState("")

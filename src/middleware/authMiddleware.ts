@@ -11,7 +11,7 @@ import {
   setFavorites,
   setSearchHistory,
 } from "../features/auth/authSlice"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 export const authMiddleware: Middleware = store => next => action => {
   const result = next(action)

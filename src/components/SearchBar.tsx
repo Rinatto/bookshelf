@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useAppSelector } from "../app/hooks"
 import { selectUser } from "../features/auth/selectors"
 import { useDebounce } from "../hooks/useDebounce"
-import { storageService } from "../services/storageService"
+import { storageService } from "../services"
 
 import { MyButton } from "./UI/MyButton/MyButton"
 
