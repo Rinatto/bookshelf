@@ -1,6 +1,4 @@
 import type React from "react"
-import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { MyButton } from "../components/UI/MyButton/MyButton"
@@ -8,26 +6,16 @@ import {
   clearSearchHistory,
   removeSearchQuery,
 } from "../features/auth/authSlice"
-import {
-  getIsAuth,
-  getSearchHistory,
-  getUser,
-} from "../features/auth/selectors"
+import { getSearchHistory, getUser } from "../features/auth/selectors"
+import { useSearchNavigation } from "../hooks/useSearchNavigation"
 
 import "../styles/HistoryPage.css"
 
 export const HistoryPage: React.FC = () => {
-  const navigate = useNavigate()
-  const isAuth = useAppSelector(getIsAuth)
   const user = useAppSelector(getUser)
   const searchHistory = useAppSelector(getSearchHistory)
   const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    if (!isAuth || !user) {
-      navigate("/signin")
-    }
-  }, [isAuth, user, navigate])
+  const navigateToSearch = useSearchNavigation()
 
   const handleClearHistory = () => {
     if (user) {
@@ -41,10 +29,6 @@ export const HistoryPage: React.FC = () => {
     }
   }
 
-  const handleQueryClick = (query: string) => {
-    navigate(`/?search=${encodeURIComponent(query)}`)
-  }
-
   return (
     <div className="history-page">
       <h1>История поиска</h1>
@@ -56,7 +40,7 @@ export const HistoryPage: React.FC = () => {
           <ul className="history-list">
             {searchHistory.map((query, index) => (
               <li key={index}>
-                <span onClick={() => handleQueryClick(query)}>{query}</span>
+                <span onClick={() => navigateToSearch(query)}>{query}</span>
                 <MyButton
                   label="Удалить"
                   onClick={() => handleRemoveQuery(query)}
