@@ -1,5 +1,5 @@
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { useAppDispatch, useAppSelector } from "../app/hooks"
@@ -36,17 +36,14 @@ export const BookCard: React.FC<BookCardProps> = ({
   const favorites = useAppSelector(selectFavorites)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const [isFavorite, setIsFavorite] = useState(false)
+
+  const isFavorite = useMemo(() => {
+    return user ? favorites.includes(id) : false
+  }, [id, user, favorites])
 
   const goToItemPage = () => {
     navigate(`/books/${id}`)
   }
-
-  useEffect(() => {
-    if (user) {
-      setIsFavorite(favorites.includes(id))
-    }
-  }, [id, user, favorites])
 
   const handleToggleFavorite = () => {
     if (!isAuth || !user) {
@@ -55,10 +52,8 @@ export const BookCard: React.FC<BookCardProps> = ({
     }
     if (favorites.includes(id)) {
       dispatch(removeFavorite(id))
-      setIsFavorite(false)
     } else {
       dispatch(addFavorite(id))
-      setIsFavorite(true)
     }
   }
 
