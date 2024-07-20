@@ -16,5 +16,7 @@ export const loggerMiddleware: Middleware<{}, any> =
       logs.shift()
     }
 
+    storageService.saveLogs(logs)
+
     return result
   }
